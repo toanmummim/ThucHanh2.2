@@ -6,41 +6,46 @@ package com.mycompany.student;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.NoSuchElementException;
 
-/**
- *
- * @author toan0
- */
 public class Student {
-    private String studentId;   // ID của sinh viên
-    private String name;        // Tên sinh viên
-    private int age;            // Tuổi sinh viên
-    private Map<String, Double> grades; // Danh sách điểm theo môn học
-    // Constructor để khởi tạo sinh viên
+    // Thuộc tính lưu mã sinh viên
+    private String studentId;
+    // Thuộc tính lưu tên sinh viên
+    private String name;
+    // Thuộc tính lưu tuổi sinh viên
+    private int age;
+    // Danh sách môn học và điểm số tương ứng
+    private Map<String, Double> grades;
+
+    // Constructor khởi tạo đối tượng Student, kiểm tra điều kiện hợp lệ
     public Student(String studentId, String name, int age) {
-        if (age < 0) {
-            throw new IllegalArgumentException("Tuổi không thể là số âm.");
-        }
         if (name == null || name.trim().isEmpty()) {
-            throw new IllegalArgumentException("Tên không được để trống.");
+            throw new IllegalArgumentException("Tên sinh viên không được để trống");
+        }
+        if (age <= 0) {
+            throw new IllegalArgumentException("Tuổi phải lớn hơn 0");
         }
         this.studentId = studentId;
         this.name = name;
         this.age = age;
-        this.grades = new HashMap<>();
+        this.grades = new HashMap<>(); // Khởi tạo danh sách môn học rỗng
     }
+
     // Getter cho studentId
     public String getStudentId() {
         return studentId;
     }
+
     // Getter cho name
     public String getName() {
         return name;
     }
-    // Cập nhật tên sinh viên
+
+    // Setter để cập nhật tên sinh viên, kiểm tra điều kiện hợp lệ
     public void updateName(String newName) {
         if (newName == null || newName.trim().isEmpty()) {
-            throw new IllegalArgumentException("Tên mới không được để trống.");
+            throw new IllegalArgumentException("Tên sinh viên không được để trống");
         }
         this.name = newName;
     }
@@ -49,45 +54,44 @@ public class Student {
     public int getAge() {
         return age;
     }
-    
-    // Setter cho age với kiểm tra điều kiện hợp lệ
+
+    // Setter cho age, kiểm tra giá trị hợp lệ trước khi cập nhật
     public void setAge(int age) {
-        if (age < 0) {
-            throw new IllegalArgumentException("Tuổi không thể là số âm.");
+        if (age <= 0) {
+            throw new IllegalArgumentException("Tuổi phải lớn hơn 0");
         }
         this.age = age;
     }
 
-    // Thêm điểm cho môn học
-    public void addGrade(String subject, double grade) {
-        if (grade < 0 || grade > 10) {
-            throw new IllegalArgumentException("Điểm phải từ 0 đến 10.");
+    // Thêm môn học và điểm số tương ứng, kiểm tra điều kiện hợp lệ
+    public void addSubject(String subject, double score) {
+        if (score < 0 || score > 10) {
+            throw new IllegalArgumentException("Điểm số phải từ 0 đến 10");
         }
-        if (grades.containsKey(subject)) {
-            throw new IllegalArgumentException("Môn học đã tồn tại.");
-        }
-        grades.put(subject, grade);
+        grades.put(subject, score);
     }
 
-    // Cập nhật điểm của môn học đã có
-    public void updateGrade(String subject, double newGrade) {
+    // Xóa môn học khỏi danh sách, ném ngoại lệ nếu môn học không tồn tại
+    public void removeSubject(String subject) {
         if (!grades.containsKey(subject)) {
-            throw new IllegalArgumentException("Môn học không tồn tại.");
+            throw new NoSuchElementException("Không tìm thấy môn học: " + subject);
         }
-        if (newGrade < 0 || newGrade > 10) {
-            throw new IllegalArgumentException("Điểm phải từ 0 đến 10.");
-        }
-        grades.put(subject, newGrade);
+        grades.remove(subject);
     }
 
-    // Tính GPA trung bình của sinh viên
+    // Getter để lấy danh sách môn học và điểm số
+    public Map<String, Double> getGrades() {
+        return grades;
+    }
+
+    // Tính GPA trung bình các môn học
     public double calculateGPA() {
         if (grades.isEmpty()) {
-            return 0.0; // Nếu chưa có môn nào, trả về 0
+            return 0.0; // Trả về 0 nếu không có môn học nào
         }
-        double total = 0;
-        for (double grade : grades.values()) {
-            total += grade;
+        double total = 0.0;
+        for (double score : grades.values()) {
+            total += score;
         }
         return total / grades.size();
     }
@@ -100,18 +104,9 @@ public class Student {
         } else if (gpa >= 6.5) {
             return "Khá";
         } else if (gpa >= 5.0) {
-            return "Trung Bình";
+            return "Trung bình";
         } else {
             return "Yếu";
         }
-    }
-
-    // Hiển thị thông tin sinh viên
-    public void displayInfo() {
-        System.out.println("Student ID: " + studentId);
-        System.out.println("Name: " + name);
-        System.out.println("Age: " + age);
-        System.out.println("GPA: " + calculateGPA());
-        System.out.println("Academic Standing: " + getAcademicStanding());
     }
 }
